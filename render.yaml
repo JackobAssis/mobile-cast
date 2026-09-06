@@ -3,8 +3,8 @@ services:
     name: mobile-cast
     env: docker
     dockerfilePath: ./Dockerfile
-    # Render injeta PORT automaticamente; Dockerfile expõe 3000 e lê PORT
     healthCheckPath: /api/health
+    # Render injeta PORT=10000 — Dockerfile agora respeita $PORT via HEALTHCHECK
     # Free tier: 512MB, sleep após 15min idle (cold start 30-50s)
     # Para testes, crie um cron que pinga /api/health a cada 10min para manter acordado
     envVars:

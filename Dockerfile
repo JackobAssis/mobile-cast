@@ -28,9 +28,10 @@ COPY --from=server-build /app/server/package*.json ./server/
 COPY --from=web-build /app/web/dist ./web/dist
 # instala apenas prod deps do server
 WORKDIR /app/server
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && apk add --no-cache curl
 EXPOSE 3000
+# PORT será injetado por Render/Fly (10000 em Render) — não fixar 3000 aqui, mas manter fallback
 ENV PORT=3000
-# healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3000/api/health || exit 1
+# healthcheck usa $PORT dinâmico (Render injeta 10000)
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD sh -c "curl -f http://localhost:${PORT:-3000}/api/health || exit 1"
 CMD ["node", "dist/index.js"]
