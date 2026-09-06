@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: mobile-cast
+    env: docker
+    dockerfilePath: ./Dockerfile
+    # Render injeta PORT automaticamente; Dockerfile expõe 3000 e lê PORT
+    healthCheckPath: /api/health
+    # Free tier: 512MB, sleep após 15min idle (cold start 30-50s)
+    # Para testes, crie um cron que pinga /api/health a cada 10min para manter acordado
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_TTL_MS
+        value: 7200000
+      # CORS: se precisar restringir
+      # - key: CORS_ORIGIN
+      #   value: https://mobile-cast.onrender.com

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# Stub para ambiente sem Android SDK instalado localmente
+# Uso real: substituir por wrapper gerado por `gradle wrapper` ou abrir no Android Studio
+echo "⚠️  gradlew stub — abra o projeto em Android Studio para build completo"
+echo "   Pasta: android/"
+echo "   Ou instale Gradle 8.6 e rode: gradle assembleDebug"
+exit 1

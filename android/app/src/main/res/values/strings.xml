@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Mobile Cast</string>
+    <string name="transmit">TRANSMITIR TELA</string>
+    <string name="stop">PARAR</string>
+    <string name="audio_available">Áudio interno: ✓ disponível</string>
+    <string name="audio_unavailable">Áudio interno: ⚠ indisponível neste app/dispositivo</string>
+    <string name="request_capture">Autorização de captura necessária</string>
+    <string name="transmitting">● Transmitindo</string>
+    <string name="idle">○ Parado</string>
+    <string name="notif_title">Mobile Cast — Transmitindo</string>
+    <string name="notif_text">Toque para voltar ao app</string>
+</resources>

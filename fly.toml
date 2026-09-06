@@ -1,0 +1,38 @@
+app = "mobile-cast" # troque para nome único: mobile-cast-seu-nome
+primary_region = "gru" # São Paulo — melhor latência BR; troque se público for global
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080" # Fly injeta 8080; Dockerfile lê PORT
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off" # manter ligado para WS (se usar scale-to-zero, WS cai)
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 500
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 500

@@ -1,0 +1,14 @@
+services:
+  coturn:
+    image: coturn/coturn:4.6.2
+    container_name: mobile-cast-turn
+    restart: unless-stopped
+    network_mode: host # necessário para TURN (precisa ver IP real)
+    volumes:
+      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+    command: ["-c", "/etc/coturn/turnserver.conf"]
+    # healthcheck
+    healthcheck:
+      test: ["CMD", "turnutils_uclient", "-p", "3478", "-u", "mobilecast", "-w", "troque-senha-forte", "127.0.0.1"]
+      interval: 30s
+      retries: 3
