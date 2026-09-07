@@ -61,6 +61,17 @@ export class PeerClient {
     };
   }
 
+  // Host mode: adiciona stream local e cria offer
+  async createOfferForHost(localStream: MediaStream) {
+    if (!this.pc) this.createPeer();
+    localStream.getTracks().forEach(track => {
+      this.pc!.addTrack(track, localStream);
+    });
+    const offer = await this.pc!.createOffer();
+    await this.pc!.setLocalDescription(offer);
+    this.signaling.send({ type: "offer", sdp: offer.sdp });
+  }
+
   async handleOffer(sdp: string) {
     if (!this.pc) this.createPeer();
     await this.pc!.setRemoteDescription({ type: "offer", sdp });
