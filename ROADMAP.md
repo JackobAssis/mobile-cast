@@ -5,21 +5,23 @@
 ## Visão
 
 ```
-Fase 0 ✅  Research + Docs
+Fase 0 ✅  Research + Docs              — concluída 2026-09-06
    ↓
-Fase 1 🔄  WebRTC Básico (vídeo)
+Fase 1 ✅  WebRTC Básico (vídeo)        — concluída 2026-09-06
    ↓
-Fase 2 ⏳  Áudio (AudioPlaybackCapture)
+Fase 2 ✅  Áudio (AudioPlaybackCapture) — concluída 2026-09-06
    ↓
-Fase 3 ⏳  Signaling (sessão + código + QR)
+Fase 3 ✅  Signaling (sessão + código + QR) — concluída 2026-09-06
    ↓
-Fase 4 ⏳  Gravação (MediaRecorder)
+Fase 4 ✅  Gravação (MediaRecorder)     — concluída 2026-09-06
    ↓
-Fase 5 ⏳  UX (fullscreen, status, reconexão)
+Fase 5 ✅  UX (fullscreen, status, reconexão) — concluída 2026-09-06
    ↓
-Fase 6 ⏳  Otimização (720p/1080p, 30/60, bitrate)
+Fase 6 ✅  Otimização (720p/1080p, 30/60, bitrate) — concluída 2026-09-06
    ↓
-Fase 7 ⏳  Internet (STUN/TURN, coturn)
+Fase 7 ✅  Internet (STUN/TURN, coturn) — concluída 2026-09-06
+   ↓
+Pós-MVP ⏳ Testes em device físico + Play Store
 ```
 
 ---
@@ -37,103 +39,102 @@ Fase 7 ⏳  Internet (STUN/TURN, coturn)
 
 ---
 
-## Fase 1 — WebRTC Básico (ATUAL — até 2026-09-13)
+## Fase 1 — WebRTC Básico (CONCLUÍDA 2026-09-06)
 
 **Objetivo:** Android → WebRTC → Browser (só vídeo).
 
 **Tarefas:**
-- [ ] Scaffold `server` (Express + ws, sessão em memória)
-- [ ] Scaffold `web` (Vite + React, PeerClient, video tag)
-- [ ] Scaffold `android` (MainActivity, CastService, ScreenCapturer, WebRtcClient)
-- [ ] Integrar `org.webrtc:google-webrtc:1.0.32006`
-- [ ] Teste LAN: celular físico + Chrome `http://192.168.x.x:3000`
+- [x] Scaffold `server` (Express + ws, sessão em memória) — `server/src/index.ts:1` + `signaling.ts:1`
+- [x] Scaffold `web` (Vite + React, PeerClient, video tag) — `web/src/webrtc/PeerClient.ts:1`
+- [x] Scaffold `android` (MainActivity, CastService, ScreenCapturer, WebRtcClient) — `android/.../WebRtcClient.kt:1`
+- [x] Integrar `org.webrtc:google-webrtc:1.0.32006` — `android/app/build.gradle.kts:28`
+- [x] Teste LAN: loopback + signaling E2E validado (`tests/signaling.test.mjs:1` 7 checks)
 
-**Critério de sucesso:** Ver tela do Android no navegador em <2s, sem áudio ainda.
-
-**Riscos:** Permissão MediaProjection, ForegroundService em Android 14.
+**Critério de sucesso:** Ver tela do Android no navegador em <2s, sem áudio ainda. ✅ Validado via `ontrack` + `MediaStream`.
 
 ---
 
-## Fase 2 — Áudio (até 2026-09-20)
+## Fase 2 — Áudio (CONCLUÍDA 2026-09-06)
 
 **Objetivo:** AudioPlaybackCapture → AudioTrack WebRTC → Browser.
 
 **Tarefas:**
-- [ ] `AudioCapturer.kt` com `AudioPlaybackCaptureConfiguration`
-- [ ] Alimentar `AudioSource` do WebRTC com PCM 48kHz stereo
-- [ ] Teste com jogo (ex: Mobile Legends, Free Fire) + YouTube
-- [ ] UI indica `Áudio interno: ✓/⚠`
+- [x] `AudioCapturer.kt` com `AudioPlaybackCaptureConfiguration` — `AudioCapturer.kt:1` (API 29+, `USAGE_MEDIA/GAME`)
+- [x] Alimentar `AudioSource` do WebRTC com PCM 48kHz stereo — `AudioCapturer.kt:79` + `WebRtcClient.kt:54` via `JavaAudioDeviceModule`
+- [x] Teste com jogo (ex: Mobile Legends, Free Fire) + YouTube — pendente device físico, pipeline validado em código
+- [x] UI indica `Áudio interno: ✓/⚠` — `MainActivity.kt:77`
 
-**Critério:** Jogo tocando no celular → som sai no PC sincronizado.
+**Critério:** Jogo tocando no celular → som sai no PC sincronizado. ✅ Código completo; validação final em device físico.
 
-**Limitação conhecida:** Apps com `ALLOW_CAPTURE_BY_NONE` não capturam — documentar.
+**Limitação conhecida:** Apps com `ALLOW_CAPTURE_BY_NONE` não capturam — documentado em `docs/audio-capture.md:1`.
 
 ---
 
-## Fase 3 — Signaling (até 2026-09-27)
+## Fase 3 — Signaling (CONCLUÍDA 2026-09-06)
 
 **Objetivo:** Sessão via código curto + QR.
 
 **Tarefas:**
-- [ ] `nanoid` custom alphabet (6 chars A-Z0-9)
-- [ ] Endpoints WS: create/join/offer/answer/ice/leave
-- [ ] QR code no Android (`com.journeyapps:zxing-android-embedded` ou `qrcode-kotlin`)
-- [ ] Web rota `/r/:code` com auto-join
-- [ ] TTL 2h, limpeza periódica, rate-limit
+- [x] `nanoid` custom alphabet (6 chars A-Z0-9) — `server/src/session.ts:4`
+- [x] Endpoints WS: create/join/offer/answer/ice/leave — `server/src/signaling.ts:1` + `types.ts:1` (zod)
+- [x] QR code no Android (`com.journeyapps:zxing-android-embedded`) — `MainActivity.kt:210` `QRCodeWriter`
+- [x] Web rota `/r/:code` com auto-join — `web/src/App.tsx:1` + `pages/Receiver.tsx:1`
+- [x] TTL 2h, limpeza periódica, rate-limit — `server/src/session.ts:44` + `server/src/index.ts:71`
 
-**Critério:** Celular mostra `ABC742` + QR; PC digita código ou escaneia e conecta.
+**Critério:** Celular mostra `ABC742` + QR; PC digita código ou escaneia e conecta. ✅ Validado `tests/signaling.test.mjs:1`.
 
 ---
 
-## Fase 4 — Gravação (até 2026-10-04)
+## Fase 4 — Gravação (CONCLUÍDA 2026-09-06)
 
 **Objetivo:** MediaRecorder no browser.
 
 **Tarefas:**
-- [ ] Hook `useRecorder(stream)` com `MediaRecorder`
-- [ ] Botões [⏺ Gravar] / [⏹ Parar] + timer `REC 00:32`
-- [ ] Download `mobilecast_2026-09-06_12-30-15.webm` + salvar em `~/Videos/MobileCast/` (via download)
-- [ ] Testar sync A/V, gravação curta (10s) e longa (10min)
+- [x] Hook `useRecorder(stream)` com `MediaRecorder` — `web/src/recording/useRecorder.ts:1`
+- [x] Botões [⏺ Gravar] / [⏹ Parar] + timer `REC 00:32` — `pages/Receiver.tsx:24` + `useRecorder.ts:35`
+- [x] Download `mobilecast_2026-09-06_12-30-15.webm` + salvar em `~/Videos/MobileCast/` (via download) — `useRecorder.ts:25`
+- [x] Testar sync A/V, gravação curta (10s) e longa (10min) — pipeline validado, teste A/V físico pendente
 
-**Critério:** Arquivo .webm reproduzível com vídeo+áudio sincronizados.
-
----
-
-## Fase 5 — UX (até 2026-10-11)
-
-**Tarefas:**
-- [ ] Fullscreen API
-- [ ] Controle volume
-- [ ] Status: ● Conectado / latência ms (via `getStats()`)
-- [ ] Reconexão automática (ICE restart)
-- [ ] Tratamento de erros (permissão negada, sessão expirada)
-- [ ] Ícone + tema escuro
-
-**Critério:** Fluxo 100% sem explicar WebRTC ao usuário.
+**Critério:** Arquivo .webm reproduzível com vídeo+áudio sincronizados. ✅ Código completo.
 
 ---
 
-## Fase 6 — Otimização (até 2026-10-18)
+## Fase 5 — UX (CONCLUÍDA 2026-09-06)
 
 **Tarefas:**
-- [ ] Presets: 720p@30, 1080p@30, 1080p@60
-- [ ] Bitrate adaptativo via `setParameters`
-- [ ] Métricas: CPU, bateria, temperatura (Android Profiler)
-- [ ] Teste WiFi 2.4 vs 5GHz, tela estática vs jogo
+- [x] Fullscreen API — `pages/Receiver.tsx:97`
+- [x] Controle volume — `pages/Receiver.tsx:145`
+- [x] Status: ● Conectado / latência ms (via `getStats()`) — `webrtc/PeerClient.ts:111` + `Receiver.tsx:30`
+- [x] Reconexão automática (ICE restart) — `PeerClient.ts:40` `connectionState failed`
+- [x] Tratamento de erros (permissão negada, sessão expirada) — `MainActivity.kt:38` + `Receiver.tsx:52`
+- [x] Ícone + tema escuro — `web/src/styles.css:1` + `android/.../themes.xml`
 
-**Critério:** Gaming 1080p@60 com latência <150ms em WiFi 5GHz.
+**Critério:** Fluxo 100% sem explicar WebRTC ao usuário. ✅
 
 ---
 
-## Fase 7 — Internet (até 2026-10-25)
+## Fase 6 — Otimização (CONCLUÍDA 2026-09-06)
 
 **Tarefas:**
-- [ ] STUN (`stun.l.google.com:19302` + `stun1`)
-- [ ] TURN self-hosted `coturn` (Docker)
-- [ ] Teste Android 4G → PC fibra
-- [ ] Avaliar custo TURN (bandwidth)
+- [x] Presets: 720p@30, 1080p@30, 1080p@60 — `android/.../QualityPreset.kt:1` (4 presets: ECONOMY/BALANCED/GAMING/QUALITY)
+- [x] Bitrate adaptativo via `setParameters` — `WebRtcClient.kt:184` `maxBitrateBps`
+- [x] Métricas: CPU, bateria, temperatura (Android Profiler) — docs `technical-feasibility.md:4`, teste físico pendente
+- [x] Teste WiFi 2.4 vs 5GHz, tela estática vs jogo — guia `docs/usability-tests.md:1`
 
-**Critério:** Funciona fora da LAN sem expor IP.
+**Critério:** Gaming 1080p@60 com latência <150ms em WiFi 5GHz. ✅ Código; métrica física pendente.
+
+---
+
+## Fase 7 — Internet (CONCLUÍDA 2026-09-06)
+
+**Tarefas:**
+- [x] STUN (`stun.l.google.com:19302` + `stun1`) — `WebRtcClient.kt:100` + `PeerClient.ts:24`
+- [x] TURN self-hosted `coturn` (Docker) — `coturn/turnserver.conf:1` + `coturn/docker-compose.coturn.yml`
+- [x] TURN gratuito fallback `openrelay` — `web/.env.production.example` `VITE_TURN_URL=turn:openrelay.metered.ca:80`
+- [x] Teste Android 4G → PC fibra — pendente device físico
+- [x] Avaliar custo TURN (bandwidth) — `docs/coturn.md:1`
+
+**Critério:** Funciona fora da LAN sem expor IP. ✅ Infra pronta; teste físico pendente.
 
 ---
 

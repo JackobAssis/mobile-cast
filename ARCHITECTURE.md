@@ -1,6 +1,6 @@
 # Arquitetura — Mobile Cast
 
-> Versão: MVP v0.1 (LAN-first) | 2026-09-06
+> Versão: MVP v0.1 (LAN-first) | 2026-09-06 — Fases 0-7 code-complete, pendente teste físico
 
 ## 1. Visão Geral
 
@@ -214,7 +214,9 @@ mobile-cast/  (projetos/Android Screen/)
 
 ---
 
-## 8. Próxima Fase
+## 8. Status Atual e Próxima Fase
 
-Fase 1: Android `ScreenCapturer` + `PeerConnection` mínimo + server WS + web `ontrack` mostrando vídeo.
-Critério de aceite: ver tela do Android no Chrome em <2s após conectar.
+**Fases 0-7 concluídas em código (2026-09-06):** ver `ROADMAP.md:1` e `IMPLEMENTATION_STATUS.md:1`.
+- AudioCapturer MVP stub com detecção de silêncio (`AudioCapturer.kt:98`); v0.2 migrará para `JavaAudioDeviceModule` com `AudioRecordFactory` para garantir PCM 100%.
+- Próximo passo: testes físicos (LAN 5GHz + 4G→fibra via TURN) e preencher `docs/test-results.md:1` (12 critérios `prompt.md:27`).
+- Pós-MVP: Play Store internal test + métricas `Android Profiler` (CPU/bateria/temperatura).

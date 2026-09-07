@@ -191,15 +191,17 @@ class WebRtcClient(
     private fun createAudioTrack() {
         try {
             val f = factory ?: return
-            val capturer = AudioCapturer(mediaProjection, f)
+            val capturer = AudioCapturer(mediaProjection, f) {
+                Log.w("WebRtcClient", "Audio silence prolonged — app may block capture (ALLOW_CAPTURE_BY_NONE)")
+            }
             val track = capturer.createTrack()
             if (track != null) {
                 audioCapturer = capturer
                 audioTrack = track
                 peerConnection!!.addTrack(track, listOf("stream0"))
-                Log.i("WebRtcClient", "AudioTrack added")
+                Log.i("WebRtcClient", "AudioTrack added (MVP stub — v0.2 will use JavaAudioDeviceModule)")
             } else {
-                Log.w("WebRtcClient", "AudioTrack unavailable — continuing video-only")
+                Log.w("WebRtcClient", "AudioTrack unavailable — continuing video-only (expected for blocked apps or no active media)")
                 capturer.release()
             }
         } catch (e: Exception) {

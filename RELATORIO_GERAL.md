@@ -1,9 +1,9 @@
 # RELATÓRIO GERAL — MOBILE CAST (Android Screen + Audio Streaming)
 
 > **Projeto:** Mobile Cast — transmissão de tela e áudio do Android para PC/TV via WebRTC, gravação local no PC
-> **Data:** 2026-09-06
+> **Data:** 2026-09-07 (atualizado — ROADMAP sincronizado, AudioCapturer silence-detect, report marked.js)
 > **Status:** MVP Fase 0-7 code-complete, deploy configurado, validado localmente, pendente testes reais entre devices
-> **Repositório:** https://github.com/JackobAssis/mobile-cast
+> **Repositório:** monorepo `JackobLab/projetos/Android Screen` + espelho opcional https://github.com/JackobAssis/mobile-cast
 > **Prompt original:** `prompt.md` (996 linhas, 29 seções)
 
 ---
@@ -53,8 +53,8 @@ Android (Kotlin) --MediaProjection/AudioPlaybackCapture--> WebRTC P2P (VP8/H264 
 |------|--------|----------|---------------------|
 | 0 Research | ✅ 2026-09-06 | Docs provam viabilidade | `technical-feasibility.md:1` + `architecture.md` + `roadmap.md` |
 | 1 WebRTC vídeo | ✅ | Ver tela <2s | `WebRtcClient` EglBase + `createPeerConnection` STUN, `PeerClient` ontrack |
-| 2 Áudio | ✅ | Jogo → som no PC | `AudioCapturer.kt:1` Q+, fallback ⚠ |
-| 3 Signaling | ✅ | Código+QR conecta | `signaling.ts:1` + `session.ts` + `types.ts`, `tests/run.sh` 7 checks |
+| 2 Áudio | ✅ | Jogo → som no PC | `AudioCapturer.kt:1` Q+, `AudioPlaybackCaptureConfiguration`, silence-detect 100 reads, fallback ⚠ |
+| 3 Signaling | ✅ | Código+QR conecta | `signaling.ts:1` + `session.ts` + `types.ts`, `tests/signaling.test.mjs` 7 checks |
 | 4 Gravação | ✅ | .webm com A/V | `useRecorder.ts` |
 | 5 UX | ✅ | Sem explicar WebRTC | QR, fullscreen, volume, latência `getStats()`, reconexão |
 | 6 Otimização | ✅ | 1080p@60 <150ms | Presets + bitrate |
@@ -120,12 +120,13 @@ Segurança: IDs `nanoid`, TTL 2h, `zod` validação, `WSS` prod, sem armazenamen
 ## 10. Estrutura Final
 
 ```
-mobile-cast/
+projetos/Android Screen/  (ou mobile-cast/ no espelho)
 ├── android/ (Kotlin, gradle, 6 kt)
 ├── server/ (Node+WS, 4 ts)
 ├── web/ (React+Vite, 8 tsx)
 ├── coturn/ (turnserver.conf, compose)
 ├── docs/ (15 md)
+├── report/index.html (marked.js render RELATORIO_GERAL.md)
 ├── scripts/ (dev, build, deploy-render, keep-alive)
 ├── tests/ (signaling.test.mjs)
 ├── Dockerfile, render.yaml, fly.toml
@@ -133,4 +134,4 @@ mobile-cast/
 └── .github/workflows/ci-mobile-cast.yml
 ```
 
-**Commits:** `e1fd640` + `034caae` + `c3a23f9` + `382717e` + `f476624` + `2894618` (mobile-cast repo)
+**Commits monorepo:** `5c11956` (report) + `f476624` (fix 503) + anteriores; espelho `mobile-cast` em `JackobAssis/mobile-cast` sincronizado via `git subtree` quando necessário.

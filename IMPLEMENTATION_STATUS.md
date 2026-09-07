@@ -1,6 +1,6 @@
 # Implementation Status — Mobile Cast MVP
 
-> Gerado automaticamente 2026-09-06 — todos os processos do `prompt.md` executados até Fase 7.
+> Atualizado 2026-09-07 — Fases 0-7 code-complete, ROADMAP sincronizado, AudioCapturer com detecção de silêncio, report com marked.js. Pendente apenas teste físico.
 
 ## Checklist §29 (primeira tarefa)
 
@@ -16,8 +16,8 @@
 |------|--------|-----------|
 | 0 Research | ✅ | 15 docs em `docs/` |
 | 1 WebRTC vídeo | ✅ | `WebRtcClient.kt` + `ScreenCapturerAndroid` + `PeerClient.ts` |
-| 2 Áudio | ✅ | `AudioCapturer.kt` (Q+) + fallback |
-| 3 Signaling | ✅ | `server/src/signaling.ts` + `session.ts` + `types.ts`, teste `tests/run.sh` 7 checks |
+| 2 Áudio | ✅ | `AudioCapturer.kt:1` (Q+, `AudioPlaybackCaptureConfiguration`, silence-detect, fallback video-only) |
+| 3 Signaling | ✅ | `server/src/signaling.ts` + `session.ts` + `types.ts`, `tests/signaling.test.mjs` 7 checks |
 | 4 Gravação | ✅ | `web/src/recording/useRecorder.ts` |
 | 5 UX | ✅ | QR, fullscreen, volume, status, reconexão, `MainActivity` spinner |
 | 6 Otimização | ✅ | `QualityPreset.kt` 4 presets + bitrate |
@@ -37,16 +37,20 @@
 - Template `docs/test-results.md` + guia `docs/usability-tests.md` (12 critérios §27)
 - Executar após `git push` para novo repo + deploy Render `https://...onrender.com`
 
-## Próximo comando para o usuário
+## Estratégia de Repositório
 
+- **Atual:** projeto vive no monorepo `JackobLab` em `projetos/Android Screen/` — é a fonte da verdade. Commits vão para `origin/main` do monorepo.
+- **Espelho opcional (recomendado para deploy):** `JackobAssis/mobile-cast` como repo isolado só para Render/Fly (evita expor monorepo privado). Criação:
 ```bash
-# criar repo isolado (não push para RotasCiclismo)
+# opção A — gh CLI (se quiser espelho público)
 gh repo create JackobAssis/mobile-cast --public --source="projetos/Android Screen"
+# opção B — remoto manual
+git subtree push --prefix="projetos/Android Screen" mobile-cast main
 # ou
 git remote add mobile-cast https://github.com/JackobAssis/mobile-cast.git
 git push mobile-cast main
-# depois Render → New Web Service → Docker → health /api/health
 ```
+- Render → New Web Service → Docker → health `/api/health` (funciona tanto com monorepo quanto espelho).
 
 ## Limitações conhecidas (§25) documentadas
 

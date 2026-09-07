@@ -15,10 +15,14 @@ h1{font-size:28px}h2{font-size:20px;margin:24px 0 12px;color:var(--accent)}h3{fo
 .badge-ok{background:var(--ok);color:#000}.badge-warn{background:var(--warn);color:#000}
 table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}th,td{border:1px solid var(--border);padding:8px;text-align:left}th{background:#222}
 a{color:var(--accent)}code{background:#222;padding:2px 6px;border-radius:6px;font-size:12px}
-iframe{width:100%;height:600px;border:1px solid var(--border);border-radius:12px;background:#fff}
 .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;margin:6px 6px 0 0}
 .muted{color:var(--muted);font-size:13px}
+#report{max-height:600px;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:16px;background:#111;font-size:13px;line-height:1.5}
+#report h1{font-size:20px;color:var(--accent);margin:12px 0 8px}#report h2{font-size:16px;color:var(--accent);margin:12px 0 6px}#report h3{font-size:14px}
+#report table{font-size:12px}#report pre{background:#1a1a1f;padding:12px;border-radius:8px;overflow:auto}
+#report code{background:#222;padding:2px 4px;border-radius:4px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 <header>
@@ -40,7 +44,7 @@ iframe{width:100%;height:600px;border:1px solid var(--border);border-radius:12px
 <tr><th>Fase</th><th>Status</th><th>Evidência</th></tr>
 <tr><td>0 Research</td><td>✅</td><td>15 docs</td></tr>
 <tr><td>1 Vídeo</td><td>✅</td><td>WebRtcClient.kt + PeerClient.ts</td></tr>
-<tr><td>2 Áudio</td><td>✅</td><td>AudioCapturer.kt</td></tr>
+<tr><td>2 Áudio</td><td>✅</td><td>AudioCapturer.kt (JavaAudioDeviceModule)</td></tr>
 <tr><td>3 Signaling</td><td>✅</td><td>7 checks E2E</td></tr>
 <tr><td>4 Gravação</td><td>✅</td><td>useRecorder.ts</td></tr>
 <tr><td>5 UX</td><td>✅</td><td>QR, presets</td></tr>
@@ -52,23 +56,29 @@ iframe{width:100%;height:600px;border:1px solid var(--border);border-radius:12px
 <div class="card">
 <h2>3. Deploy</h2>
 <p><b>Render Free</b> (recomendado) — <code>Dockerfile</code> multi-stage, <code>render.yaml</code>, health <code>/api/health</code> fix 503 (<code>curl $PORT</code>). Alternativas: Koyeb (sem sleep), Fly.io <code>gru</code>.</p>
-<p class="muted">Repo: https://github.com/JackobAssis/mobile-cast • Localtunnel validado https://tired-tools-lick.loca.lt/api/health → ok (temporário)</p>
+<p class="muted">Repo: monorepo JackobLab + espelho <code>JackobAssis/mobile-cast</code> • Local: <code>projetos/Android Screen</code></p>
 </div>
 
 <div class="card">
-<h2>4. Relatório Completo (Markdown)</h2>
-<iframe src="../RELATORIO_GERAL.md"></iframe>
-<p class="muted">Se iframe não renderizar markdown, <a href="../RELATORIO_GERAL.md">abrir direto</a>.</p>
+<h2>4. Relatório Completo</h2>
+<div id="report">Carregando RELATORIO_GERAL.md...</div>
+<p class="muted" style="margin-top:8px">Renderizado via <code>marked.js</code>. <a href="../RELATORIO_GERAL.md" target="_blank">Abrir markdown raw</a>.</p>
 </div>
 
 <div class="card">
 <h2>5. Próximos passos</h2>
 <ol style="margin-left:18px">
-<li>Render Manual Deploy (commit 2894618) → testar Android 4G → PC fibra com TURN</li>
+<li>Render Manual Deploy → testar Android 4G → PC fibra com TURN</li>
 <li>Preencher <code>docs/test-results.md</code></li>
 <li>Play Store internal test</li>
 </ol>
 </div>
 </div>
+<script>
+fetch('../RELATORIO_GERAL.md')
+  .then(r => r.ok ? r.text() : Promise.reject(r.status))
+  .then(md => { document.getElementById('report').innerHTML = marked.parse(md); })
+  .catch(e => { document.getElementById('report').textContent = 'Falha ao carregar RELATORIO_GERAL.md: ' + e + ' — abra o link acima.'; });
+</script>
 </body>
 </html>

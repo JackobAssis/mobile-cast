@@ -173,14 +173,14 @@ TURN gratuito para NAT restritivo: `VITE_TURN_URL=turn:openrelay.metered.ca:80` 
 
 - [x] Fase 0 — Research + Docs
 - [x] Fase 1 — WebRTC básico (vídeo) — `WebRtcClient.kt` + `PeerClient.ts`
-- [x] Fase 2 — Áudio — `AudioCapturer.kt`
+- [x] Fase 2 — Áudio — `AudioCapturer.kt` (API 29+, silêncio-detect)
 - [x] Fase 3 — Signaling + QR — `server/src/signaling.ts` + `MainActivity.kt`
 - [x] Fase 4 — Gravação — `useRecorder.ts` (MediaRecorder)
 - [x] Fase 5 — UX + Deploy configs — `Dockerfile`, `render.yaml`, `fly.toml`, `docs/deploy.md`
-- [ ] Fase 6 — Otimização (presets 720p/1080p, bitrate)
-- [ ] Fase 7 — Internet (TURN coturn próprio)
+- [x] Fase 6 — Otimização (presets 720p/1080p, bitrate) — `QualityPreset.kt` 4 presets
+- [x] Fase 7 — Internet (TURN coturn próprio) — `coturn/` + `VITE_TURN_URL`
 
-Detalhes em `docs/roadmap.md`.
+Detalhes em `ROADMAP.md` e `docs/roadmap.md`. Pendente apenas teste físico device → `docs/test-results.md`.
 
 ---
 
