@@ -29,16 +29,44 @@ export default function Transmit() {
     setConnState("new");
   }, []);
 
-  const startSharing = useCallback(async () => {
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const hasDisplayMedia = !!(navigator.mediaDevices as any)?.getDisplayMedia;
+
+  const startCameraFallback = useCallback(async () => {
     setError(null);
     try {
-      // Solicita captura de tela + áudio (navegador)
-      const stream = await navigator.mediaDevices.getDisplayMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: true });
+      localStreamRef.current = stream;
+      if (previewRef.current) {
+        previewRef.current.srcObject = stream;
+        previewRef.current.play().catch(() => {});
+      }
+      setSharing(true);
+      stream.getVideoTracks()[0]?.addEventListener("ended", () => stopSharing());
+      if (peerRef.current) {
+        if ((peerRef.current.pc?.getSenders().length ?? 0) === 0) {
+          await peerRef.current.createOfferForHost(stream);
+        }
+      }
+    } catch (e: any) {
+      setError(e?.message ?? "Falha ao acessar câmera — verifique permissão.");
+    }
+  }, [stopSharing]);
+
+  const startSharing = useCallback(async () => {
+    setError(null);
+    if (!hasDisplayMedia) {
+      setError("Este navegador não suporta compartilhamento de tela (getDisplayMedia). No celular, use o app Android para transmitir a tela. Como alternativa, use a câmera abaixo.");
+      return;
+    }
+    try {
+      // Solicita captura de tela + áudio (navegador desktop)
+      const stream = await (navigator.mediaDevices as any).getDisplayMedia({
         video: { displaySurface: "monitor" } as any,
         audio: true,
       }).catch(async () => {
         // fallback: tenta sem áudio se usuário negar
-        return await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+        return await (navigator.mediaDevices as any).getDisplayMedia({ video: true, audio: false });
       });
 
       localStreamRef.current = stream;
@@ -58,7 +86,7 @@ export default function Transmit() {
         await peerRef.current.createOfferForHost(stream);
       } else if (peerRef.current) {
         // adiciona tracks ao peer para quando viewer entrar
-        stream.getTracks().forEach(track => peerRef.current!.pc?.addTrack(track, stream));
+        stream.getTracks().forEach((track: MediaStreamTrack) => peerRef.current!.pc?.addTrack(track, stream));
         // offer será criada no onPeerJoined
         if (viewerJoined) {
           await peerRef.current.createOfferForHost(stream);
@@ -194,12 +222,25 @@ export default function Transmit() {
             </div>
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)", display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
               {!sharing ? (
-                <button className="btn-primary" style={{ fontSize: 16, padding: "12px 24px" }} onClick={startSharing}>🖥️ Compartilhar tela</button>
+                <>
+                  {hasDisplayMedia ? (
+                    <button className="btn-primary" style={{ fontSize: 16, padding: "12px 24px" }} onClick={startSharing}>🖥️ Compartilhar tela</button>
+                  ) : (
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ background: "#1a1a1f", border: "1px solid #2a2a30", padding: 12, borderRadius: 8, fontSize: 13, color: "#ffb020", marginBottom: 8 }}>
+                        📱 No celular o navegador não permite capturar a tela.<br />
+                        Use o <b>app Android</b> → <b>Transmitir tela</b> (MediaProjection + áudio interno).<br />
+                        O código deste site serve para <b>Receber</b> no PC, não para transmitir do celular via browser.
+                      </div>
+                      <button className="btn-primary" style={{ fontSize: 14, padding: "10px 18px" }} onClick={startCameraFallback}>📷 Transmitir câmera (fallback)</button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <button className="btn-ghost" style={{ borderColor: "var(--danger)", color: "var(--danger)" }} onClick={stopSharing}>⏹ Parar compartilhamento</button>
               )}
               <span style={{ fontSize: 12, color: "var(--muted)", alignSelf: "center" }}>
-                {sharing ? `Transmissão ativa — ${connState}` : "Escolha a tela/janela para transmitir"}
+                {sharing ? `Transmissão ativa — ${connState}` : hasDisplayMedia ? "Escolha a tela/janela para transmitir" : isMobile ? "App Android recomendado para tela" : "Escolha a tela/janela"}
               </span>
             </div>
             {!viewerJoined && sharing && (
@@ -212,9 +253,9 @@ export default function Transmit() {
             {!sharing && (
               <div className="video-overlay">
                 <div style={{ textAlign: "center", maxWidth: 320 }}>
-                  <div style={{ fontSize: 28, marginBottom: 8 }}>🖥️</div>
-                  <div>Clique em Compartilhar tela para iniciar</div>
-                  <div style={{ fontSize: 12, marginTop: 8, color: "#aaa" }}>Selecione a tela inteira para transmitir como o celular faz. Áudio do sistema será incluído se você marcar "Compartilhar áudio".</div>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{hasDisplayMedia ? "🖥️" : "📱"}</div>
+                  <div>{hasDisplayMedia ? "Clique em Compartilhar tela para iniciar" : "No celular, transmita pelo app Android"}</div>
+                  <div style={{ fontSize: 12, marginTop: 8, color: "#aaa" }}>{hasDisplayMedia ? "Selecione a tela inteira para transmitir como o celular faz. Áudio do sistema será incluído se você marcar \"Compartilhar áudio\"." : "Abra o app Android → Transmitir tela → use o código acima no PC em Receber. Ou use Transmitir câmera como teste."}</div>
                 </div>
               </div>
             )}
