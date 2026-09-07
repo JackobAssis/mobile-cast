@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0f0f12"/>
+  <rect x="48" y="48" width="416" height="416" rx="48" fill="#1a1a1f" stroke="#6c5cff" stroke-width="8"/>
+  <!-- Screen -->
+  <rect x="96" y="96" width="320" height="220" rx="20" fill="#6c5cff"/>
+  <rect x="112" y="112" width="288" height="160" rx="12" fill="#0f0f12"/>
+  <!-- Video play -->
+  <path d="M220 160 L300 196 L220 232 Z" fill="#6c5cff"/>
+  <!-- Cast waves -->
+  <path d="M96 360 Q160 320 220 360 Q280 400 360 360" stroke="#00d38f" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M120 388 Q180 360 220 388 Q260 416 340 388" stroke="#6c5cff" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Phone -->
+  <rect x="200" y="340" width="112" height="80" rx="16" fill="#2a2a30" stroke="#6c5cff" stroke-width="4"/>
+  <rect x="210" y="350" width="92" height="60" rx="8" fill="#0f0f12"/>
+  <circle cx="256" cy="390" r="3" fill="#6c5cff"/>
+</svg>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InstallButton from "../components/InstallButton";
 
 export default function Home() {
   const [code, setCode] = useState("");
@@ -14,8 +15,14 @@ export default function Home() {
   return (
     <div className="container">
       <header style={{ textAlign: "center", margin: "40px 0 24px" }}>
-        <h1 style={{ fontSize: 32, fontWeight: 800 }}>Mobile Cast</h1>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 8 }}>
+          <img src="/icons/icon-192.png" alt="Mobile Cast" width={48} height={48} style={{ borderRadius: 12, border: "1px solid var(--border)" }} />
+          <h1 style={{ fontSize: 32, fontWeight: 800 }}>Mobile Cast</h1>
+        </div>
         <p style={{ color: "var(--muted)", marginTop: 8 }}>Transmissão P2P via WebRTC — escolha o modo</p>
+        <div style={{ marginTop: 12 }}>
+          <InstallButton />
+        </div>
       </header>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, maxWidth: 640, margin: "0 auto" }}>
